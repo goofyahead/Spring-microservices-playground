@@ -4,13 +4,10 @@ import com.example.tacomanager.models.Taco;
 import com.example.tacomanager.repository.TacoRepository;
 import com.example.tacomanager.service.TacoMessagingService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @RestController
@@ -26,33 +23,32 @@ public class TacoController {
     }
 
     @GetMapping()
-    public Iterable<Taco> allTacos() {
+    public Flux<Taco> allTacos() {
         log.info("root hit for tacos");
-        return tacoRepo.findAll();
+        return Flux.fromIterable(tacoRepo.findAll()).take(5);
     }
 
     @PostMapping(consumes="application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public Taco postTaco(@RequestBody Taco taco) {
+    public Mono<Taco> postTaco(@RequestBody Taco taco) {
         Taco savedTaco = tacoRepo.save(taco);
-        tacoMessagingService.sendTaco(savedTaco);
-        return savedTaco;
+        tacoMessagingService.sendTaco(taco);
+        return Mono.just(savedTaco);
+
+//         return tacoRepo.save(taco).map(savedTaco -> {
+//             tacoMessagingService.sendTaco(savedTaco);
+//             return savedTaco;
+//         });
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Taco> tacoById(@PathVariable("id") Long id) {
-        Optional<Taco> optTaco = tacoRepo.findById(id);
-
-        if (optTaco.isPresent()) {
-            return new ResponseEntity<>(optTaco.get(), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    public Mono<Taco> tacoById(@PathVariable("id") Long id) {
+        return Mono.just(tacoRepo.findById(id).get());
+//        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/recent")
-    public Iterable<Taco> recentTacos() {
-        PageRequest page = PageRequest.of(
-                0, 12, Sort.by("createdAt").descending());
-        return tacoRepo.findAll(page).getContent();
+    public Flux<Taco> recentTacos() {
+        return Flux.fromIterable(tacoRepo.findAll()).take(5);
     }
 }
