@@ -21,8 +21,8 @@ public class Taco implements Serializable {
     @Size(min = 5, message = "needs to be at least 5 characters long")
     private String name;
 
-    @ManyToMany(targetEntity=Ingredient.class)
-    @Size(min=1, message="You must choose at least 1 ingredient")
+    @ManyToMany(targetEntity = Ingredient.class)
+    @Size(min = 1, message = "You must choose at least 1 ingredient")
     private List<Ingredient> ingredients;
 
     @PrePersist

@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: greetings-module
+
+server:
+  port: 0

@@ -28,7 +28,7 @@ public class TacoController {
         return Flux.fromIterable(tacoRepo.findAll()).take(5);
     }
 
-    @PostMapping(consumes="application/json")
+    @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Taco> postTaco(@RequestBody Taco taco) {
         Taco savedTaco = tacoRepo.save(taco);

@@ -17,8 +17,8 @@ public class Order implements Serializable {
     private Long id;
     private Date createdAt;
 
-    @OneToMany(targetEntity=Taco.class)
-    @Size(min=1, message="It must contain at least 1 taco")
+    @OneToMany(targetEntity = Taco.class)
+    @Size(min = 1, message = "It must contain at least 1 taco")
     private List<Taco> tacos;
 
     @PrePersist
